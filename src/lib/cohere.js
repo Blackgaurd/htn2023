@@ -1,7 +1,5 @@
 import cohere from "cohere-ai";
-import dotenv from "dotenv";
-dotenv.config();
-cohere.init(process.env["API_KEY"]);
+cohere.init("pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF");
 /**
  * real documentation
  * @param input the user's input (string)
