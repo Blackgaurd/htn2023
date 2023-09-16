@@ -1,8 +1,10 @@
 <script>
 	import { fade } from 'svelte/transition';
 	import queryCohere from '../lib/cohere.js';
+	import getTherapy from "../lib/therapy.js";
 
 	let TESTING = true;
+	let therapist = false;
 
 	let symptoms = [
 		'Fever',
@@ -70,8 +72,12 @@
 		if (symptomInput === '') {
 			return;
 		}
-		hideOutput = false;
-		queryPromise = queryCohere(symptomInput, TESTING);
+		if (!therapist) {
+			hideOutput = false;
+			queryPromise = queryCohere(symptomInput, TESTING);
+		} else {
+			getTherapy(symptomInput, TESTING).then(alert);
+		}
 	}
 
 	let showDetails = new Array(10).fill(false);
@@ -86,7 +92,6 @@
 		}
 	}
 </script>
-
 <div
 	class="flex flex-row items-center justify-center"
 	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
@@ -97,16 +102,20 @@
 			<h1 class="text-6xl text-white">Dr. AI</h1>
 			<img src="/src/assets/doctor-icon.png" alt="Logo" class="w-16 h-16" />
 		</div>
+		<label>
+			<input type="checkbox" bind:checked={therapist}/>
+			Therapist mode
+		</label>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="m-4 w-[32rem]">
-			<h1>Find your illness and find the cure!</h1>
+			<h1>{therapist?"How was your day?":"Find your illness and find the cure!"}</h1>
 			<div class="flex flex-row px-3 py-2 space-x-2 bg-white rounded-md">
 				<button class="bg-inherit" on:click={search}>&#128269;</button>
 				<input
 					id="symptomInput"
 					class="w-full text-black bg-inherit focus:outline-none"
 					type="text"
-					placeholder="Tell us about your symptoms"
+					placeholder={therapist?"I'm here for you :)":"Tell us about your symptoms"}
 					bind:value={symptomInput}
 					on:keypress={(e) => {
 						if (e.key === 'Enter') {
@@ -115,6 +124,7 @@
 					}}
 				/>
 			</div>
+			{#if !therapist}
 			<div class="mt-2">
 				<p>Common Illness Symptoms:</p>
 				<div class="flex flex-wrap">
@@ -128,6 +138,7 @@
 					{/each}
 				</div>
 			</div>
+				{/if}
 			{#if avatar}
 				<div class="relative">
 					<img class="object-cover w-full mt-4 h-80" src={avatar} alt="Uploaded" />
@@ -140,12 +151,15 @@
 				</div>
 			{/if}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			{#if !therapist}
 			<div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
 				Don't know how to describe your symptom?
 				<button class="px-2 py-1 ml-2 text-white bg-red-400 rounded-md hover:bg-red-500">
 					Upload an image
 				</button>
 			</div>
+			{/if}
+			{#if !therapist}
 			<input
 				style="display:none"
 				type="file"
@@ -153,6 +167,7 @@
 				on:change={(e) => onFileSelected(e)}
 				bind:this={fileinput}
 			/>
+			{/if}
 		</div>
 	</div>
 

@@ -7,9 +7,12 @@ const chatHistory = [];
  * @returns {Promise<*>} the response
  * @throws Error if input > 700 chars
  */
-export default async function getTherapy(input) {
+export default async function getTherapy(input, TESTING) {
     if (input.length>700) {
         throw new Error("Input too long: " + input.length());
+    }
+    if (TESTING) {
+        return Promise.resolve("This is a test response.")
     }
     chatHistory.push({
         patient: input
