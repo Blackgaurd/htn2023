@@ -17,6 +17,11 @@
             avatar = e.target.result;
         };
     }
+
+    let hideOutput = true;
+    function search() {
+        hideOutput = false;
+    }
 </script>
 
 <div
