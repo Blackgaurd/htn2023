@@ -12,7 +12,6 @@
 		'Nausea',
 		'Shortness of Breath'
 	];
-	let uploadedImage = null;
 
 	function addSymptom(symptom) {
 		const inputField = document.querySelector('#symptomInput');
@@ -27,10 +26,39 @@
 		reader.readAsDataURL(image);
 		reader.onload = (e) => {
 			avatar = e.target.result;
+			// Upload the image to Flask
+			uploadImageToFlask(image);
 		};
 	};
 
+	function removeImage() {
+		avatar = null;
+	}
+
 	let symptomInput = '';
+	async function uploadImageToFlask(image) {
+		const formData = new FormData();
+		formData.append('image', image);
+
+		try {
+			const response = await fetch('http://127.0.0.1:5000//upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				// Handle the response from Flask here
+				const captions = await response.json();
+				console.log(captions);
+				symptomInput = captions[0].generated_text;
+			} else {
+				console.error('Error uploading image');
+			}
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+
 	let hideOutput = true;
 	let queryPromise = null;
 	async function search() {
@@ -91,10 +119,15 @@
 				</div>
 			</div>
 			{#if avatar}
-				<img class="mt-4 h-64 w-64 rounded-full object-cover" src={avatar} alt="Uploaded" />
-			{:else}
-				<!-- Default avatar image -->
-				<!-- <img class="avatar" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" /> -->
+				<div class="relative">
+					<img class="mt-4 h-80 w-full object-cover" src={avatar} alt="Uploaded" />
+					<button
+						class="bg-red-400 text-white px-2 py-1 rounded-md absolute top-0 right-0 -mt-2 -mr-2 hover:bg-red-500"
+						on:click={removeImage}
+					>
+						X
+					</button>
+				</div>
 			{/if}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
@@ -120,7 +153,9 @@
 		>
 			{#if queryPromise}
 				{#await queryPromise}
-					<p class="animate-pulse">Loading</p>
+					<div class="text-xl font-semibold text-gray-700 loading-animation">
+						<div class="spinner" />
+					</div>
 				{:then illnesses}
                     <p>{illnesses.length}</p>
 					{#each illnesses as illness, index}
@@ -154,6 +189,30 @@
 </div>
 
 <style>
+	.loading-animation {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100px;
+	}
+
+	.spinner {
+		border: 8px solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		border-top: 4px solid #3498db;
+		width: 80px;
+		height: 80px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
 	.shift-left {
 		transform: translateX(-20%);
 		transition: transform 0.5s ease-in-out;
