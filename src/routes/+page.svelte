@@ -1,6 +1,8 @@
 <script>
 	import queryCohere from '../lib/cohere.js';
 
+    let TESTING = true;
+
 	let symptoms = [
 		'Fever',
 		'Headache',
@@ -32,54 +34,12 @@
 	let hideOutput = true;
 	let queryPromise = null;
 	async function search() {
+        if (symptomInput === '') {
+            return;
+        }
 		hideOutput = false;
-		queryPromise = queryCohere(symptomInput);
+		queryPromise = queryCohere(symptomInput, TESTING);
 	}
-
-	let illnesses = [
-		// {
-		// 	name: 'Common Cold',
-		// 	why: 'The patient has a runny nose, which is a common symptom of the common cold.',
-		// 	next: 'No medication is needed for a common cold, but the…ld get plenty of rest and drink plenty of fluids.',
-		// 	confidence: '90%'
-		// },
-		// {
-		// 	name: 'Allergies',
-		// 	why: 'The patient has a runny nose, which can be a symptom of allergies.',
-		// 	next: 'The patient should try to avoid triggers and take over-the-counter allergy medication if needed.',
-		// 	confidence: '80%'
-		// },
-		// {
-		// 	name: 'Sinus Infection',
-		// 	why: 'The patient has a runny nose, which can be a symptom of a sinus infection.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '70%'
-		// },
-		// {
-		// 	name: 'COVID-19',
-		// 	why: 'The patient has a runny nose, which is a common symptom of COVID-19.',
-		// 	next: 'The patient should get tested for COVID-19 and self-isolate until results are received.',
-		// 	confidence: '60%'
-		// },
-		// {
-		// 	name: 'Common Flu',
-		// 	why: 'The patient has a runny nose, which is a common symptom of the common flu.',
-		// 	next: 'The patient should get plenty of rest and drink plenty of fluids.',
-		// 	confidence: '50%'
-		// },
-		// {
-		// 	name: 'Strep Throat',
-		// 	why: 'The patient has a runny nose, which can be a symptom of strep throat.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '40%'
-		// },
-		// {
-		// 	name: 'Bronchitis',
-		// 	why: 'The patient has a runny nose, which can be a symptom of bronchitis.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '30%'
-		// }
-	];
 
 	let showDetails = new Array(10).fill(false);
 
@@ -93,26 +53,28 @@
 	class="flex flex-row justify-center items-center"
 	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
 >
-	<div
-		class="flex flex-col justify-center items-center h-screen"
-		class:shift-left={!hideOutput}
-	>
+	<div class="flex flex-col justify-center items-center h-screen" class:shift-left={!hideOutput}>
 		<!-- center this div vertically -->
 		<div class="flex">
 			<h1 class="text-6xl text-white">Dr. AI</h1>
 			<img src="/src/assets/doctor-icon.png" alt="Logo" class="h-16 w-16" />
 		</div>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<div class="m-4">
+		<div class="m-4 w-[40rem]">
 			<h1>Find your illness and find the cure!</h1>
 			<div class="flex flex-row bg-white py-2 px-3 space-x-2 rounded-md">
 				<button class="bg-inherit" on:click={search}>&#128269;</button>
 				<input
 					id="symptomInput"
-					class="w-[32rem] bg-inherit focus:outline-none text-black"
+					class="bg-inherit focus:outline-none text-black w-full"
 					type="text"
 					placeholder="Tell us about your symptoms"
 					bind:value={symptomInput}
+					on:keypress={(e) => {
+						if (e.key === 'Enter') {
+							search();
+						}
+					}}
 				/>
 			</div>
 			<div class="mt-2">
@@ -158,8 +120,9 @@
 		>
 			{#if queryPromise}
 				{#await queryPromise}
-					<p>Loading</p>
+					<p class="animate-pulse">Loading</p>
 				{:then illnesses}
+                    <p>{illnesses.length}</p>
 					{#each illnesses as illness, index}
 						<div class="border p-4 my-4 rounded-md bg-white">
 							<p class="text-lg font-semibold">Name: {illness.name}</p>
