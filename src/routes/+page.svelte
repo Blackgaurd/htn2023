@@ -1,7 +1,8 @@
 <script>
+	import { fade } from 'svelte/transition';
 	import queryCohere from '../lib/cohere.js';
 
-    let TESTING = true;
+	let TESTING = true;
 
 	let symptoms = [
 		'Fever',
@@ -62,9 +63,9 @@
 	let hideOutput = true;
 	let queryPromise = null;
 	async function search() {
-        if (symptomInput === '') {
-            return;
-        }
+		if (symptomInput === '') {
+			return;
+		}
 		hideOutput = false;
 		queryPromise = queryCohere(symptomInput, TESTING);
 	}
@@ -78,23 +79,23 @@
 </script>
 
 <div
-	class="flex flex-row justify-center items-center"
+	class="flex flex-row items-center justify-center"
 	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
 >
-	<div class="flex flex-col justify-center items-center h-screen" class:shift-left={!hideOutput}>
+	<div class="flex flex-col items-center justify-center h-screen" class:shift-left={!hideOutput}>
 		<!-- center this div vertically -->
 		<div class="flex">
 			<h1 class="text-6xl text-white">Dr. AI</h1>
-			<img src="/src/assets/doctor-icon.png" alt="Logo" class="h-16 w-16" />
+			<img src="/src/assets/doctor-icon.png" alt="Logo" class="w-16 h-16" />
 		</div>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<div class="m-4 w-[40rem]">
+		<div class="m-4 w-[32rem]">
 			<h1>Find your illness and find the cure!</h1>
-			<div class="flex flex-row bg-white py-2 px-3 space-x-2 rounded-md">
+			<div class="flex flex-row px-3 py-2 space-x-2 bg-white rounded-md">
 				<button class="bg-inherit" on:click={search}>&#128269;</button>
 				<input
 					id="symptomInput"
-					class="bg-inherit focus:outline-none text-black w-full"
+					class="w-full text-black bg-inherit focus:outline-none"
 					type="text"
 					placeholder="Tell us about your symptoms"
 					bind:value={symptomInput}
@@ -110,7 +111,7 @@
 				<div class="flex flex-wrap">
 					{#each symptoms as symptom}
 						<button
-							class="bg-white px-2 py-1 m-1 rounded-md cursor-pointer"
+							class="px-2 py-1 m-1 bg-white rounded-md cursor-pointer"
 							on:click={() => addSymptom(symptom)}
 						>
 							{symptom}
@@ -120,9 +121,9 @@
 			</div>
 			{#if avatar}
 				<div class="relative">
-					<img class="mt-4 h-80 w-full object-cover" src={avatar} alt="Uploaded" />
+					<img class="object-cover w-full mt-4 h-80" src={avatar} alt="Uploaded" />
 					<button
-						class="bg-red-400 text-white px-2 py-1 rounded-md absolute top-0 right-0 -mt-2 -mr-2 hover:bg-red-500"
+						class="absolute top-0 right-0 px-2 py-1 -mt-2 -mr-2 text-white bg-red-400 rounded-md hover:bg-red-500"
 						on:click={removeImage}
 					>
 						X
@@ -132,7 +133,7 @@
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
 				Don't know how to describe your symptom?
-				<button class="bg-red-400 text-white px-2 py-1 rounded-md ml-2 hover:bg-red-500">
+				<button class="px-2 py-1 ml-2 text-white bg-red-400 rounded-md hover:bg-red-500">
 					Upload an image
 				</button>
 			</div>
@@ -148,40 +149,42 @@
 
 	<div>
 		<div
-			class="opacity-0 transition-opacity ease-in-out duration-1000 delay-500"
+			class="transition-opacity duration-1000 ease-in-out delay-500 opacity-0"
 			class:opacity-100={!hideOutput}
 		>
 			{#if queryPromise}
 				{#await queryPromise}
-					<div class="text-xl font-semibold text-gray-700 loading-animation">
+					<div class="text-xl font-semibold text-gray-700 loading-animation w-[32rem] px-4">
 						<div class="spinner" />
 					</div>
 				{:then illnesses}
-                    <p>{illnesses.length}</p>
-					{#each illnesses as illness, index}
-						<div class="border p-4 my-4 rounded-md bg-white">
-							<p class="text-lg font-semibold">Name: {illness.name}</p>
-							<button
-								class="bg-blue-500 text-white px-4 py-1 rounded-md mt-2"
-								on:click={() => toggleDetails(index)}
-							>
-								{showDetails[index] ? 'Hide Details' : 'Show Details'}
-							</button>
-							{#if showDetails[index]}
-								<div
-									class="mt-2 p-4 bg-gray-100"
-									style={showDetails[index] ? 'display-block' : 'display-none'}
+					<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade
+					>
+						{#each illnesses as illness, index}
+							<div class="p-4 my-4 bg-white border rounded-md shadow-sm">
+								<p class="text-lg font-semibold">Name: {illness.name}</p>
+								<button
+									class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
+									on:click={() => toggleDetails(index)}
 								>
-									<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
-									<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
-									<p class="text-sm">
-										<span class="font-bold">Confidence:</span>
-										{illness.confidence}
-									</p>
-								</div>
-							{/if}
-						</div>
-					{/each}
+									{showDetails[index] ? 'Hide Details' : 'Show Details'}
+								</button>
+								{#if showDetails[index]}
+									<div
+										class="p-4 mt-2 bg-gray-100 rounded-md shadow-inner"
+										style={showDetails[index] ? 'display-block' : 'display-none'}
+									>
+										<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
+										<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
+										<p class="text-sm">
+											<span class="font-bold">Confidence:</span>
+											{illness.confidence}
+										</p>
+									</div>
+								{/if}
+							</div>
+						{/each}
+					</div>
 				{/await}
 			{/if}
 		</div>
