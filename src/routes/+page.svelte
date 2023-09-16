@@ -62,12 +62,14 @@
 
 	let hideOutput = true;
 	let queryPromise = null;
-	async function search() {
+	function search() {
 		if (symptomInput === '') {
 			return;
 		}
-		hideOutput = false;
-		queryPromise = queryCohere(symptomInput, TESTING);
+		queryPromise = queryCohere(symptomInput, TESTING).then((res) => {
+            hideOutput = false;
+			return res;
+		});
 	}
 
 	let showDetails = new Array(10).fill(false);
