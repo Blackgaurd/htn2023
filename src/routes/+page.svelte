@@ -2,7 +2,7 @@
 	import prompt from '../lib/cohere.js';
 
 	let symptoms = [
-		'Fever',
+		'F Fever',
 		'Headache',
 		'Cough',
 		'Fatigue',
@@ -25,73 +25,48 @@
 		reader.readAsDataURL(image);
 		reader.onload = (e) => {
 			avatar = e.target.result;
+			// Upload the image to Flask
+			uploadImageToFlask(image);
 		};
 	};
+
+    let imageCaption = ""
+	async function uploadImageToFlask(image) {
+		const formData = new FormData();
+		formData.append('image', image);
+
+		try {
+			const response = await fetch('http://127.0.0.1:5000//upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				// Handle the response from Flask here
+				const captions = await response.json();
+				console.log(captions);
+                imageCaption = captions[0].generated_text;
+			} else {
+				console.error('Error uploading image');
+			}
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
 
 	let hideOutput = true;
 	function search() {
 		hideOutput = false;
 	}
 
-	let illnesses = [
-		// {
-		// 	name: 'Common Cold',
-		// 	why: 'The patient has a runny nose, which is a common symptom of the common cold.',
-		// 	next: 'No medication is needed for a common cold, but the…ld get plenty of rest and drink plenty of fluids.',
-		// 	confidence: '90%'
-		// },
-		// {
-		// 	name: 'Allergies',
-		// 	why: 'The patient has a runny nose, which can be a symptom of allergies.',
-		// 	next: 'The patient should try to avoid triggers and take over-the-counter allergy medication if needed.',
-		// 	confidence: '80%'
-		// },
-		// {
-		// 	name: 'Sinus Infection',
-		// 	why: 'The patient has a runny nose, which can be a symptom of a sinus infection.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '70%'
-		// },
-		// {
-		// 	name: 'COVID-19',
-		// 	why: 'The patient has a runny nose, which is a common symptom of COVID-19.',
-		// 	next: 'The patient should get tested for COVID-19 and self-isolate until results are received.',
-		// 	confidence: '60%'
-		// },
-		// {
-		// 	name: 'Common Flu',
-		// 	why: 'The patient has a runny nose, which is a common symptom of the common flu.',
-		// 	next: 'The patient should get plenty of rest and drink plenty of fluids.',
-		// 	confidence: '50%'
-		// },
-		// {
-		// 	name: 'Strep Throat',
-		// 	why: 'The patient has a runny nose, which can be a symptom of strep throat.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '40%'
-		// },
-		// {
-		// 	name: 'Bronchitis',
-		// 	why: 'The patient has a runny nose, which can be a symptom of bronchitis.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '30%'
-		// }
-	];
+	let illnesses = [];
 	prompt('I have a runny nose.').then((response) => {
-		console.log(response);
+		// console.log(response);
 		illnesses = response;
-		// Assuming response is an array of objects
-		// response.forEach((item, index) => {
-		// 	console.log(`Item ${index + 1}:`);
-		// 	console.log(`Name: ${item.name}`);
-		// 	console.log(`Why: ${item.why}`);
-		// 	console.log(`Next: ${item.next}`);
-		// 	console.log(`Confidence: ${item.confidence}`);
-		// });
 	});
+
 	let showDetails = new Array(10).fill(false);
 
-	// Function to toggle the visibility of an illness's details
 	function toggleDetails(index) {
 		showDetails[index] = !showDetails[index];
 	}
@@ -120,6 +95,7 @@
 					class="w-[32rem] bg-inherit focus:outline-none text-black"
 					type="text"
 					placeholder="Tell us about your symptoms"
+                    value={imageCaption ? imageCaption : ""}
 				/>
 			</div>
 			<div class="mt-2">
@@ -155,6 +131,7 @@
 				on:change={(e) => onFileSelected(e)}
 				bind:this={fileinput}
 			/>
+
 		</div>
 	</div>
 
@@ -174,10 +151,16 @@
 							{showDetails[index] ? 'Hide Details' : 'Show Details'}
 						</button>
 						{#if showDetails[index]}
-							<div class="mt-2 p-4 bg-gray-100" style={showDetails[index] ? "display-block" : "display-none"}>
+							<div
+								class="mt-2 p-4 bg-gray-100"
+								style={showDetails[index] ? 'display-block' : 'display-none'}
+							>
 								<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
 								<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
-								<p class="text-sm"><span class="font-bold">Confidence:</span> {illness.confidence}</p>
+								<p class="text-sm">
+									<span class="font-bold">Confidence:</span>
+									{illness.confidence}
+								</p>
 							</div>
 						{/if}
 					</div>
