@@ -9,9 +9,9 @@
 		'Headache',
 		'Cough',
 		'Fatigue',
-		'Sore Throat',
+		'Sore throat',
 		'Nausea',
-		'Shortness of Breath'
+		'Shortness of breath'
 	];
 
 
