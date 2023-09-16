@@ -29,20 +29,25 @@ For each illness that the patient may have, output 4 bullet points in the below 
 - WHY: x
 - NEXT: x
 - CONFIDENCE: x%`;
-	const req = await fetch('https://api.cohere.ai/v1/generate', {
-		method: 'POST',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			Authorization: 'Bearer pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF'
-		},
-		body: JSON.stringify({
-			prompt: prompt,
-			model: 'command',
-			max_tokens: 400,
-			temperature: 0
-		})
-	});
+	let req = null;
+	try {
+		req = await fetch('https://api.cohere.ai/v1/generate', {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				Authorization: 'Bearer pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF'
+			},
+			body: JSON.stringify({
+				prompt: prompt,
+				model: 'command',
+				max_tokens: 400,
+				temperature: 0
+			})
+		});
+	} catch (e) {
+		throw new Error(`Cohere API error: ${e.message}`);
+	}
 	const res = (await req.json()).generations[0].text;
 
 	const ans = [];
