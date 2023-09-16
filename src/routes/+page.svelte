@@ -28,9 +28,12 @@
 		};
 	};
 
+	let symptomInput = '';
 	let hideOutput = true;
-	function search() {
+	let promptPromise = null;
+	async function search() {
 		hideOutput = false;
+		promptPromise = prompt(symptomInput);
 	}
 
 	let illnesses = [
@@ -77,6 +80,7 @@
 		// 	confidence: '30%'
 		// }
 	];
+
 	prompt('I have a runny nose.').then((response) => {
 		console.log(response);
 		illnesses = response;
@@ -120,6 +124,7 @@
 					class="w-[32rem] bg-inherit focus:outline-none text-black"
 					type="text"
 					placeholder="Tell us about your symptoms"
+					bind:value={symptomInput}
 				/>
 			</div>
 			<div class="mt-2">
@@ -159,11 +164,41 @@
 	</div>
 
 	<div>
-		<p
+		<div
 			class="opacity-0 transition-opacity ease-in-out duration-1000 delay-500"
 			class:opacity-100={!hideOutput}
 		>
-			{#if illnesses && illnesses.length > 0}
+			{#if promptPromise}
+				{#await promptPromise}
+					<p>Loading</p>
+				{:then illnesses}
+					{#each illnesses as illness, index}
+						<div class="border p-4 my-4 rounded-md bg-white">
+							<p class="text-lg font-semibold">Name: {illness.name}</p>
+							<button
+								class="bg-blue-500 text-white px-4 py-1 rounded-md mt-2"
+								on:click={() => toggleDetails(index)}
+							>
+								{showDetails[index] ? 'Hide Details' : 'Show Details'}
+							</button>
+							{#if showDetails[index]}
+								<div
+									class="mt-2 p-4 bg-gray-100"
+									style={showDetails[index] ? 'display-block' : 'display-none'}
+								>
+									<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
+									<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
+									<p class="text-sm">
+										<span class="font-bold">Confidence:</span>
+										{illness.confidence}
+									</p>
+								</div>
+							{/if}
+						</div>
+					{/each}
+				{/await}
+			{/if}
+			<!-- {#if illnesses && illnesses.length > 0}
 				{#each illnesses as illness, index}
 					<div class="border p-4 my-4 rounded-md bg-white">
 						<p class="text-lg font-semibold">Name: {illness.name}</p>
@@ -174,18 +209,24 @@
 							{showDetails[index] ? 'Hide Details' : 'Show Details'}
 						</button>
 						{#if showDetails[index]}
-							<div class="mt-2 p-4 bg-gray-100" style={showDetails[index] ? "display-block" : "display-none"}>
+							<div
+								class="mt-2 p-4 bg-gray-100"
+								style={showDetails[index] ? 'display-block' : 'display-none'}
+							>
 								<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
 								<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
-								<p class="text-sm"><span class="font-bold">Confidence:</span> {illness.confidence}</p>
+								<p class="text-sm">
+									<span class="font-bold">Confidence:</span>
+									{illness.confidence}
+								</p>
 							</div>
 						{/if}
 					</div>
 				{/each}
 			{:else}
 				<p class="text-xl font-semibold text-gray-700 loading-message">Loading...</p>
-			{/if}
-		</p>
+			{/if} -->
+		</div>
 	</div>
 </div>
 
