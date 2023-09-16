@@ -166,7 +166,7 @@
 					>
 						{#each illnesses as illness, index}
 							<div class="p-4 my-4 bg-white border rounded-md shadow-sm">
-								<p class="text-lg font-semibold">Name: {illness.name}</p>
+								<p class="text-lg font-semibold">{illness.name}</p>
 								<button
 									class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
 									on:click={() => toggleDetails(index)}
@@ -178,7 +178,7 @@
 										class="p-4 mt-2 bg-gray-100 rounded-md shadow-inner"
 										style={showDetails[index] ? 'display-block' : 'display-none'}
 									>
-										<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
+										<p class="text-sm"><span class="font-bold">Explanation:</span> {illness.why}</p>
 										<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
 										<p class="text-sm">
 											<span class="font-bold">Confidence:</span>
