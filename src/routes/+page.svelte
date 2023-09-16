@@ -10,7 +10,6 @@
 		'Nausea',
 		'Shortness of Breath'
 	];
-	let uploadedImage = null;
 
 	function addSymptom(symptom) {
 		const inputField = document.querySelector('#symptomInput');
@@ -29,6 +28,10 @@
 			uploadImageToFlask(image);
 		};
 	};
+
+	function removeImage() {
+		avatar = null;
+	}
 
 	let symptomInput = '';
 	async function uploadImageToFlask(image) {
@@ -61,50 +64,7 @@
 		queryPromise = queryCohere(symptomInput);
 	}
 
-	let illnesses = [
-		// {
-		// 	name: 'Common Cold',
-		// 	why: 'The patient has a runny nose, which is a common symptom of the common cold.',
-		// 	next: 'No medication is needed for a common cold, but the…ld get plenty of rest and drink plenty of fluids.',
-		// 	confidence: '90%'
-		// },
-		// {
-		// 	name: 'Allergies',
-		// 	why: 'The patient has a runny nose, which can be a symptom of allergies.',
-		// 	next: 'The patient should try to avoid triggers and take over-the-counter allergy medication if needed.',
-		// 	confidence: '80%'
-		// },
-		// {
-		// 	name: 'Sinus Infection',
-		// 	why: 'The patient has a runny nose, which can be a symptom of a sinus infection.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '70%'
-		// },
-		// {
-		// 	name: 'COVID-19',
-		// 	why: 'The patient has a runny nose, which is a common symptom of COVID-19.',
-		// 	next: 'The patient should get tested for COVID-19 and self-isolate until results are received.',
-		// 	confidence: '60%'
-		// },
-		// {
-		// 	name: 'Common Flu',
-		// 	why: 'The patient has a runny nose, which is a common symptom of the common flu.',
-		// 	next: 'The patient should get plenty of rest and drink plenty of fluids.',
-		// 	confidence: '50%'
-		// },
-		// {
-		// 	name: 'Strep Throat',
-		// 	why: 'The patient has a runny nose, which can be a symptom of strep throat.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '40%'
-		// },
-		// {
-		// 	name: 'Bronchitis',
-		// 	why: 'The patient has a runny nose, which can be a symptom of bronchitis.',
-		// 	next: 'The patient should see a doctor to get a proper diagnosis and treatment.',
-		// 	confidence: '30%'
-		// }
-	];
+	let illnesses = [];
 
 	// prompt('I have a runny nose.').then((response) => {
 	// 	console.log(response);
@@ -130,10 +90,7 @@
 	class="flex flex-row justify-center items-center"
 	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
 >
-	<div
-		class="flex flex-col justify-center items-center h-screen"
-		class:shift-left={!hideOutput}
-	>
+	<div class="flex flex-col justify-center items-center h-screen" class:shift-left={!hideOutput}>
 		<!-- center this div vertically -->
 		<div class="flex">
 			<h1 class="text-6xl text-white">Dr. AI</h1>
@@ -166,10 +123,15 @@
 				</div>
 			</div>
 			{#if avatar}
-				<img class="mt-4 h-64 w-80 object-cover" src={avatar} alt="Uploaded" />
-			{:else}
-				<!-- Default avatar image -->
-				<!-- <img class="avatar" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" /> -->
+				<div class="relative">
+					<img class="mt-4 h-80 w-full object-cover" src={avatar} alt="Uploaded" />
+					<button
+						class="bg-red-400 text-white px-2 py-1 rounded-md absolute top-0 right-0 -mt-2 -mr-2 hover:bg-red-500"
+						on:click={removeImage}
+					>
+						X
+					</button>
+				</div>
 			{/if}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
@@ -195,7 +157,9 @@
 		>
 			{#if queryPromise}
 				{#await queryPromise}
-					<p>Loading</p>
+					<div class="text-xl font-semibold text-gray-700 loading-animation">
+						<div class="spinner" />
+					</div>
 				{:then illnesses}
 					{#each illnesses as illness, index}
 						<div class="border p-4 my-4 rounded-md bg-white">
@@ -228,6 +192,30 @@
 </div>
 
 <style>
+	.loading-animation {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100px;
+	}
+
+	.spinner {
+		border: 8px solid rgba(255, 255, 255, 0.3);
+		border-radius: 50%;
+		border-top: 4px solid #3498db;
+		width: 80px;
+		height: 80px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
 	.shift-left {
 		transform: translateX(-20%);
 		transition: transform 0.5s ease-in-out;
