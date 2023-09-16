@@ -101,6 +101,30 @@ const TESTING_DISEASES = [
     }
 ];
 
+export async function generateCohere(prompt) {
+    let req = null;
+    try {
+        req = await fetch('https://api.cohere.ai/v1/generate', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF'
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                model: 'command',
+                max_tokens: 400,
+                temperature: 0
+            })
+        });
+    } catch (e) {
+        throw new Error(`Cohere API error: ${e.message}`);
+    }
+    const res = (await req.json()).generations[0].text;
+    return res;
+}
+
 /**
  * real documentation
  * @param input the user's input (string)
@@ -115,28 +139,9 @@ export default async function queryCohere(input, testing = false) {
 
 	console.log('PRODUCTION MODE');
 	const prompt = getPrompt(input);
-	let req = null;
-	try {
-		req = await fetch('https://api.cohere.ai/v1/generate', {
-			method: 'POST',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				Authorization: 'Bearer pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF'
-			},
-			body: JSON.stringify({
-				prompt: prompt,
-				model: 'command',
-				max_tokens: 400,
-				temperature: 0
-			})
-		});
-	} catch (e) {
-		throw new Error(`Cohere API error: ${e.message}`);
-	}
-	const res = (await req.json()).generations[0].text;
+    const res = await generateCohere(prompt);
 
-	const ans = [];
+    const ans = [];
 	const illnesses = res.split('\n\n');
 	illnesses.length--; //bandaid solution to output truncation
 
