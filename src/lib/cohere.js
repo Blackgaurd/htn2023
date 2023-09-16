@@ -109,7 +109,7 @@ const TESTING_DISEASES = [
 export default async function queryCohere(input, testing = false) {
 	if (testing) {
 		console.log('TESTING MODE');
-		await new Promise((resolve) => setTimeout(resolve, 3000));
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return TESTING_DISEASES;
 	}
 
