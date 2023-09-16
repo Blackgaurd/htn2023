@@ -19,3 +19,8 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #1268f6;
 }
+
+* {
+  scrollbar-color: #3b82f6 #ffffff;
+  scrollbar-width: thin;
+}
