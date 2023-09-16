@@ -56,48 +56,6 @@ const TESTING_DISEASES = [
         why: 'The patient experiences wheezing, shortness of breath, and chest tightness, especially during physical activity or exposure to allergens.',
         next: 'The patient should use their prescribed inhaler and avoid triggers.',
         confidence: '70%'
-    },
-    {
-        name: 'Gastroenteritis',
-        why: 'The patient has diarrhea, vomiting, and abdominal cramps, typically after consuming contaminated food or water.',
-        next: 'The patient should stay hydrated and may need antiemetic medication if severe.',
-        confidence: '80%'
-    },
-    {
-        name: 'Urinary Tract Infection (UTI)',
-        why: 'The patient experiences frequent urination, burning sensation while urinating, and lower abdominal pain.',
-        next: 'The patient should see a doctor for a urine test and antibiotics if confirmed.',
-        confidence: '85%'
-    },
-    {
-        name: 'Migraine',
-        why: 'The patient has recurrent severe headaches, often accompanied by nausea and sensitivity to light or sound.',
-        next: 'The patient should rest in a quiet, dark room and consider a prescribed migraine medication.',
-        confidence: '75%'
-    },
-    {
-        name: 'Rheumatoid Arthritis',
-        why: 'The patient has joint pain, swelling, and stiffness, particularly in the morning or after periods of rest.',
-        next: 'The patient should see a rheumatologist for diagnosis and treatment options.',
-        confidence: '80%'
-    },
-    {
-        name: 'Hypertension (High Blood Pressure)',
-        why: 'The patient consistently has elevated blood pressure readings during check-ups.',
-        next: 'The patient should make lifestyle changes, such as diet and exercise, and may need medication.',
-        confidence: '70%'
-    },
-    {
-        name: 'Anxiety Disorder',
-        why: 'The patient experiences excessive worry, restlessness, and physical symptoms like increased heart rate and sweating.',
-        next: 'The patient should consult a mental health professional for therapy and possible medication.',
-        confidence: '75%'
-    },
-    {
-        name: 'Gout',
-        why: 'The patient has sudden and severe joint pain, typically in the big toe, along with redness and swelling.',
-        next: 'The patient should see a doctor for a diagnosis and may need medication to manage gout attacks.',
-        confidence: '80%'
     }
 ];
 
