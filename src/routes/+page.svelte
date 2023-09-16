@@ -14,10 +14,7 @@
 		'Shortness of Breath'
 	];
 
-	function addSymptom(symptom) {
-		const inputField = document.querySelector('#symptomInput');
-		inputField.value += ` ${symptom}`;
-	}
+
 
 	let avatar, fileinput;
 
@@ -36,7 +33,6 @@
 		avatar = null;
 	}
 
-	let symptomInput = '';
 	async function uploadImageToFlask(image) {
 		const formData = new FormData();
 		formData.append('image', image);
@@ -62,14 +58,20 @@
 
 	let hideOutput = true;
 	let queryPromise = null;
-	function search() {
+	let symptomInput = '';
+	function addSymptom(symptom) {
+		if (symptomInput === '') {
+			symptomInput = symptom;
+		} else {
+			symptomInput += `, ${symptom.toLowerCase()}`;
+		}
+	}
+	async function search() {
 		if (symptomInput === '') {
 			return;
 		}
-		queryPromise = queryCohere(symptomInput, TESTING).then((res) => {
-            hideOutput = false;
-			return res;
-		});
+		hideOutput = false;
+		queryPromise = queryCohere(symptomInput, TESTING);
 	}
 
 	let showDetails = new Array(10).fill(false);
