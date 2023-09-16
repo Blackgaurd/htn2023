@@ -80,6 +80,11 @@
 	function toggleDetails(index) {
 		showDetails[index] = !showDetails[index];
 	}
+	function fillShowDetails(val, end) {
+		for (let i = 0; i < end; i++) {
+			showDetails[i] = val;
+		}
+	}
 </script>
 
 <div
@@ -164,6 +169,10 @@
 				{:then illnesses}
 					<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade
 					>
+						<div>
+							<button class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
+							on:click={()=>fillShowDetails(!showDetails.every((v,i)=>i>=illnesses.length||v), illnesses.length)}>{showDetails.every((v,i)=>i>=illnesses.length||v)?"Collapse all":"Expand all"}</button>
+						</div>
 						{#each illnesses as illness, index}
 							<div class="p-4 my-4 bg-white border rounded-md shadow-sm">
 								<p class="text-lg font-semibold">{illness.name}</p>
@@ -171,7 +180,7 @@
 									class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
 									on:click={() => toggleDetails(index)}
 								>
-									{showDetails[index] ? 'Hide Details' : 'Show Details'}
+									{showDetails[index] ? 'Hide details' : 'Show details'}
 								</button>
 								{#if showDetails[index]}
 									<div
