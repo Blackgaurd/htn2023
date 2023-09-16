@@ -162,5 +162,5 @@ export default async function queryCohere(input, testing = false) {
 	for (const s of set) {
 		realAns.push(ans.find((x) => x.name === s));
 	}
-	return realAns;
+	return realAns.sort((a, b) => parseFloat(b.confidence) - parseFloat(a.confidence)).slice(0, 5);
 }
