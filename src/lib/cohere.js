@@ -54,27 +54,26 @@ export default async function queryCohere(input) {
     }
     const res = (await req.json()).generations[0].text;
 
-    const ans = [];
-    const illnesses = res.split("\n\n");
-    illnesses.length--; //bandaid solution to output truncation
+	const ans = [];
+	const illnesses = res.split('\n\n');
+	illnesses.length--; //bandaid solution to output truncation
 
-    for (const illness of illnesses) {
-        const lines = illness.split("\n");
-        ans.push({
-            name: lines[0].split("NAME: ")[1],
-            why: lines[1].split("WHY: ")[1],
-            next: lines[2].split("NEXT: ")[1],
-            confidence: lines[3].split("CONFIDENCE: ")[1]
-        });
-    }
-    const set = new Set();
-    for (const illness of ans) {
-        set.add(illness.name);
-    }
-    const realAns = [];
-    for (const s of set) {
-        realAns.push(ans.find((x) => x.name === s));
-    }
-    return realAns;
-
+	for (const illness of illnesses) {
+		const lines = illness.split('\n');
+		ans.push({
+			name: lines[0].split('NAME: ')[1],
+			why: lines[1].split('WHY: ')[1],
+			next: lines[2].split('NEXT: ')[1],
+			confidence: lines[3].split('CONFIDENCE: ')[1]
+		});
+	}
+	const set = new Set();
+	for (const illness of ans) {
+		set.add(illness.name);
+	}
+	const realAns = [];
+	for (const s of set) {
+		realAns.push(ans.find((x) => x.name === s));
+	}
+	return realAns;
 }
