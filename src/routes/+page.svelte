@@ -1,23 +1,22 @@
 <script>
-	let symptoms = [
-		'Fever',
-		'Headache',
-		'Cough',
-		'Fatigue',
-		'Sore Throat',
-		'Nausea',
-		'Shortness of Breath'
-	];
+    let symptoms = ["Fever", "Headache", "Cough", "Fatigue", "Sore Throat", "Nausea", "Shortness of Breath"];
+    let uploadedImage = null;
 
-	function addSymptom(symptom) {
-		const inputField = document.querySelector('#symptomInput');
-		inputField.value += ` ${symptom}`;
-	}
+    function addSymptom(symptom) {
+        const inputField = document.querySelector("#symptomInput");
+        inputField.value += ` ${symptom}`;
+    }
 
-	let hideOutput = true;
-	function search() {
-		hideOutput = false;
-	}
+    let avatar, fileinput;
+
+    const onFileSelected = (e) => {
+        let image = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = (e) => {
+            avatar = e.target.result;
+        };
+    }
 </script>
 
 <div
