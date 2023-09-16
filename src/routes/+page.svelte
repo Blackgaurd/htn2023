@@ -1,5 +1,5 @@
 <script>
-	import prompt from '../lib/cohere.js';
+	import queryCohere from '../lib/cohere.js';
 
 	let symptoms = [
 		'Fever',
@@ -30,10 +30,10 @@
 
 	let symptomInput = '';
 	let hideOutput = true;
-	let promptPromise = null;
+	let queryPromise = null;
 	async function search() {
 		hideOutput = false;
-		promptPromise = prompt(symptomInput);
+		queryPromise = queryCohere(symptomInput);
 	}
 
 	let illnesses = [
@@ -81,18 +81,6 @@
 		// }
 	];
 
-	prompt('I have a runny nose.').then((response) => {
-		console.log(response);
-		illnesses = response;
-		// Assuming response is an array of objects
-		// response.forEach((item, index) => {
-		// 	console.log(`Item ${index + 1}:`);
-		// 	console.log(`Name: ${item.name}`);
-		// 	console.log(`Why: ${item.why}`);
-		// 	console.log(`Next: ${item.next}`);
-		// 	console.log(`Confidence: ${item.confidence}`);
-		// });
-	});
 	let showDetails = new Array(10).fill(false);
 
 	// Function to toggle the visibility of an illness's details
@@ -168,8 +156,8 @@
 			class="opacity-0 transition-opacity ease-in-out duration-1000 delay-500"
 			class:opacity-100={!hideOutput}
 		>
-			{#if promptPromise}
-				{#await promptPromise}
+			{#if queryPromise}
+				{#await queryPromise}
 					<p>Loading</p>
 				{:then illnesses}
 					{#each illnesses as illness, index}

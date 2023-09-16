@@ -1,10 +1,5 @@
-/**
- * real documentation
- * @param input the user's input (string)
- * @returns {Promise<*[]>} promise of an array of objects of the form {name, why, next, confidence}
- */
-export default async function prompt(input) {
-    const prompt = `### Instruction ###
+function getPrompt(input) {
+    return `### Instruction ###
 Determine the illness, if any, that a patient is experiencing based on the context below, given the following symptoms that they have observed over the past few weeks. Strongly consider the possibility that the patient might not be ill. If an illness is very severe, recommend them to visit the hospital.
 
 ### Context ###
@@ -29,6 +24,15 @@ For each illness that the patient may have, output 4 bullet points in the below 
 - WHY: x
 - NEXT: x
 - CONFIDENCE: x%`;
+}
+
+/**
+ * real documentation
+ * @param input the user's input (string)
+ * @returns {Promise<*[]>} promise of an array of objects of the form {name, why, next, confidence}
+ */
+export default async function queryCohere(input) {
+    const prompt = getPrompt(input)
     let req = null;
     try {
         req = await fetch("https://api.cohere.ai/v1/generate", {
