@@ -9,15 +9,12 @@
 		'Headache',
 		'Cough',
 		'Fatigue',
-		'Sore Throat',
+		'Sore throat',
 		'Nausea',
-		'Shortness of Breath'
+		'Shortness of breath',
+		'Dizziness',
+		'Stuffy nose'
 	];
-
-	function addSymptom(symptom) {
-		const inputField = document.querySelector('#symptomInput');
-		inputField.value += ` ${symptom}`;
-	}
 
 	let avatar, fileinput;
 
@@ -36,7 +33,6 @@
 		avatar = null;
 	}
 
-	let symptomInput = '';
 	async function uploadImageToFlask(image) {
 		const formData = new FormData();
 		formData.append('image', image);
@@ -62,6 +58,14 @@
 
 	let hideOutput = true;
 	let queryPromise = null;
+	let symptomInput = '';
+	function addSymptom(symptom) {
+		if (symptomInput === '') {
+			symptomInput = symptom;
+		} else {
+			symptomInput += `, ${symptom.toLowerCase()}`;
+		}
+	}
 	async function search() {
 		if (symptomInput === '') {
 			return;
@@ -91,11 +95,10 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="m-4 w-[32rem]">
 			<h1>Find your illness and find the cure!</h1>
-			<div class="flex flex-row px-3 py-2 space-x-2 bg-white rounded-md">
-				<button class="bg-inherit" on:click={search}>&#128269;</button>
+			<div class="flex flex-row px-3 py-2 space-x-2 bg-white rounded-md shadow-md">
+				<button on:click={search}>&#128269;</button>
 				<input
-					id="symptomInput"
-					class="w-full text-black bg-inherit focus:outline-none"
+					class="w-full text-black focus:outline-none"
 					type="text"
 					placeholder="Tell us about your symptoms"
 					bind:value={symptomInput}
@@ -105,13 +108,22 @@
 						}
 					}}
 				/>
+				{#if symptomInput !== ''}
+					<button
+						in:fade={{ delay: 50, duration: 150 }}
+						out:fade={{ delay: 50, duration: 150 }}
+						on:click={() => {
+							symptomInput = '';
+						}}>&#10005;</button
+					>
+				{/if}
 			</div>
 			<div class="mt-2">
 				<p>Common Illness Symptoms:</p>
 				<div class="flex flex-wrap">
 					{#each symptoms as symptom}
 						<button
-							class="px-2 py-1 m-1 bg-white rounded-md cursor-pointer"
+							class="px-2 py-1 my-1 mr-2 transition-colors duration-150 ease-in bg-white rounded-md shadow-sm cursor-pointer hover:bg-slate-100"
 							on:click={() => addSymptom(symptom)}
 						>
 							{symptom}
@@ -158,8 +170,7 @@
 						<div class="spinner" />
 					</div>
 				{:then illnesses}
-					<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade
-					>
+					<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade>
 						{#each illnesses as illness, index}
 							<div class="p-4 my-4 bg-white border rounded-md shadow-sm">
 								<p class="text-lg font-semibold">Name: {illness.name}</p>
