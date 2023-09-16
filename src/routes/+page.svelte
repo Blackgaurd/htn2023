@@ -1,5 +1,5 @@
 <script>
-	import prompt from '../lib/cohere.js';
+	import queryCohere from '../lib/cohere.js';
 
 	let symptoms = [
 		'Fever',
@@ -55,10 +55,10 @@
 	}
 
 	let hideOutput = true;
-	let promptPromise = null;
+	let queryPromise = null;
 	async function search() {
 		hideOutput = false;
-		promptPromise = prompt(symptomInput);
+		queryPromise = queryCohere(symptomInput);
 	}
 
 	let illnesses = [
@@ -131,7 +131,7 @@
 	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
 >
 	<div
-		class="flex flex-col justify-center items-center h-screen translate-x-[13%]"
+		class="flex flex-col justify-center items-center h-screen"
 		class:shift-left={!hideOutput}
 	>
 		<!-- center this div vertically -->
@@ -193,8 +193,8 @@
 			class="opacity-0 transition-opacity ease-in-out duration-1000 delay-500"
 			class:opacity-100={!hideOutput}
 		>
-			{#if promptPromise}
-				{#await promptPromise}
+			{#if queryPromise}
+				{#await queryPromise}
 					<p>Loading</p>
 				{:then illnesses}
 					{#each illnesses as illness, index}
@@ -223,34 +223,6 @@
 					{/each}
 				{/await}
 			{/if}
-			<!-- {#if illnesses && illnesses.length > 0}
-				{#each illnesses as illness, index}
-					<div class="border p-4 my-4 rounded-md bg-white">
-						<p class="text-lg font-semibold">Name: {illness.name}</p>
-						<button
-							class="bg-blue-500 text-white px-4 py-1 rounded-md mt-2"
-							on:click={() => toggleDetails(index)}
-						>
-							{showDetails[index] ? 'Hide Details' : 'Show Details'}
-						</button>
-						{#if showDetails[index]}
-							<div
-								class="mt-2 p-4 bg-gray-100"
-								style={showDetails[index] ? 'display-block' : 'display-none'}
-							>
-								<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
-								<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
-								<p class="text-sm">
-									<span class="font-bold">Confidence:</span>
-									{illness.confidence}
-								</p>
-							</div>
-						{/if}
-					</div>
-				{/each}
-			{:else}
-				<p class="text-xl font-semibold text-gray-700 loading-message">Loading...</p>
-			{/if} -->
 		</div>
 	</div>
 </div>
