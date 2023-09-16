@@ -25,10 +25,35 @@
 		reader.readAsDataURL(image);
 		reader.onload = (e) => {
 			avatar = e.target.result;
+			// Upload the image to Flask
+			uploadImageToFlask(image);
 		};
 	};
 
 	let symptomInput = '';
+	async function uploadImageToFlask(image) {
+		const formData = new FormData();
+		formData.append('image', image);
+
+		try {
+			const response = await fetch('http://127.0.0.1:5000//upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				// Handle the response from Flask here
+				const captions = await response.json();
+				console.log(captions);
+				symptomInput = captions[0].generated_text;
+			} else {
+				console.error('Error uploading image');
+			}
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+
 	let hideOutput = true;
 	let promptPromise = null;
 	async function search() {
@@ -81,18 +106,18 @@
 		// }
 	];
 
-	prompt('I have a runny nose.').then((response) => {
-		console.log(response);
-		illnesses = response;
-		// Assuming response is an array of objects
-		// response.forEach((item, index) => {
-		// 	console.log(`Item ${index + 1}:`);
-		// 	console.log(`Name: ${item.name}`);
-		// 	console.log(`Why: ${item.why}`);
-		// 	console.log(`Next: ${item.next}`);
-		// 	console.log(`Confidence: ${item.confidence}`);
-		// });
-	});
+	// prompt('I have a runny nose.').then((response) => {
+	// 	console.log(response);
+	// 	illnesses = response;
+	// 	// Assuming response is an array of objects
+	// 	// response.forEach((item, index) => {
+	// 	// 	console.log(`Item ${index + 1}:`);
+	// 	// 	console.log(`Name: ${item.name}`);
+	// 	// 	console.log(`Why: ${item.why}`);
+	// 	// 	console.log(`Next: ${item.next}`);
+	// 	// 	console.log(`Confidence: ${item.confidence}`);
+	// 	// });
+	// });
 	let showDetails = new Array(10).fill(false);
 
 	// Function to toggle the visibility of an illness's details
@@ -141,7 +166,7 @@
 				</div>
 			</div>
 			{#if avatar}
-				<img class="mt-4 h-64 w-64 rounded-full object-cover" src={avatar} alt="Uploaded" />
+				<img class="mt-4 h-64 w-80 object-cover" src={avatar} alt="Uploaded" />
 			{:else}
 				<!-- Default avatar image -->
 				<!-- <img class="avatar" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" /> -->
