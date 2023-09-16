@@ -29,8 +29,9 @@ For each illness that the patient may have, output 4 bullet points in the below 
 - WHY: x
 - NEXT: x
 - CONFIDENCE: x%`;
+    let req = null;
     try {
-        const req = await fetch("https://api.cohere.ai/v1/generate", {
+        req = await fetch("https://api.cohere.ai/v1/generate", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
