@@ -17,6 +17,11 @@
             avatar = e.target.result;
         };
     }
+
+    let hideOutput = true;
+    function search() {
+        hideOutput = false;
+    }
 </script>
 
 <div
@@ -32,6 +37,7 @@
 			<h1 class="text-6xl text-white">Dr. AI</h1>
 			<img src="/src/assets/doctor-icon.png" alt="Logo" class="h-16 w-16" />
 		</div>
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="m-4">
 			<h1>Find your illness and find the cure!</h1>
 			<div class="flex flex-row bg-white py-2 px-3 space-x-2 rounded-md">
@@ -56,6 +62,20 @@
 					{/each}
 				</div>
 			</div>
+            {#if avatar}
+            <img class="mt-4 h-64 w-64 rounded-full object-cover" src={avatar} alt="Uploaded" />
+        {:else}
+            <!-- Default avatar image -->
+            <!-- <img class="avatar" src="https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png" alt="" /> -->
+        {/if}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
+            Don't know how to describe your symptom? 
+            <button class="bg-red-400 text-white px-2 py-1 rounded-md ml-2 hover:bg-red-500">
+                Upload an image
+            </button>
+        </div>
+        <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e) => onFileSelected(e)} bind:this={fileinput} />
 		</div>
 	</div>
 
