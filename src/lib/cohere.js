@@ -1,5 +1,3 @@
-import cohere from "cohere-ai";
-cohere.init("pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF");
 /**
  * real documentation
  * @param input the user's input (string)
@@ -37,13 +35,21 @@ For each illness that the patient may have, output 4 bullet points in the below 
 - NEXT: You can take over-the-counter antihistamines to help relieve your allergy symptoms. You can also use saline nasal sprays to help with nasal congestion.
 - CONFIDENCE: 80%
 `;
-
-    const res = (await cohere.generate({
-        prompt: prompt,
-        model: "command",
-        max_tokens:400,
-        temperature: 0.9
-    })).body.generations[0].text;
+    const req = await fetch("https://api.cohere.ai/v1/generate", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer pKcjgYfSVd5fProxLQJBDFqvRqV40s0indj1CZOF"
+        },
+        body: JSON.stringify({
+            prompt: prompt,
+            model: "command",
+            max_tokens: 400,
+            temperature: 0.9
+        })
+    });
+    const res = (await req.json()).generations[0].text;
 
     const ans = [];
     const illnesses = res.split("\n\n");

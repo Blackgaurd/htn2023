@@ -1,4 +1,5 @@
 <script>
+	import prompt from "../lib/cohere.js";
     let symptoms = ["Fever", "Headache", "Cough", "Fatigue", "Sore Throat", "Nausea", "Shortness of Breath"];
     let uploadedImage = null;
 
