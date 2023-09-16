@@ -186,34 +186,6 @@
 					{/each}
 				{/await}
 			{/if}
-			<!-- {#if illnesses && illnesses.length > 0}
-				{#each illnesses as illness, index}
-					<div class="border p-4 my-4 rounded-md bg-white">
-						<p class="text-lg font-semibold">Name: {illness.name}</p>
-						<button
-							class="bg-blue-500 text-white px-4 py-1 rounded-md mt-2"
-							on:click={() => toggleDetails(index)}
-						>
-							{showDetails[index] ? 'Hide Details' : 'Show Details'}
-						</button>
-						{#if showDetails[index]}
-							<div
-								class="mt-2 p-4 bg-gray-100"
-								style={showDetails[index] ? 'display-block' : 'display-none'}
-							>
-								<p class="text-sm"><span class="font-bold">Why:</span> {illness.why}</p>
-								<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
-								<p class="text-sm">
-									<span class="font-bold">Confidence:</span>
-									{illness.confidence}
-								</p>
-							</div>
-						{/if}
-					</div>
-				{/each}
-			{:else}
-				<p class="text-xl font-semibold text-gray-700 loading-message">Loading...</p>
-			{/if} -->
 		</div>
 	</div>
 </div>
