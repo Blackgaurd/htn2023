@@ -23,18 +23,17 @@ For each illness that the patient may have, output 4 bullet points in the below 
 - NEXT: Detail potential next steps, in 1-2 sentences, such as giving a medication prescription. If medication is prescribed, be very specific and refer to the specific names of the medication.
 - CONFIDENCE: Calculate the certainty of the diagnosis as a percentage (100% means definitely certain).
 
-### Example Output ###
+### Example Output Format ###
 
-- NAME: Common cold
-- WHY: Your eyes tearing up and having a runny nose are common symptoms of the common cold.
-- NEXT: You can take over-the-counter medications such as ibuprofen or acetaminophen to help relieve your cold symptoms. You can also use saline nasal sprays to help with nasal congestion.
-- CONFIDENCE: 90%
+- NAME: x
+- WHY: x
+- NEXT: x
+- CONFIDENCE: x%
 
-- NAME: Allergies
-- WHY: Your eyes tearing up and having a runny nose can be caused by allergies.
-- NEXT: You can take over-the-counter antihistamines to help relieve your allergy symptoms. You can also use saline nasal sprays to help with nasal congestion.
-- CONFIDENCE: 80%
-`;
+- NAME: x
+- WHY: x
+- NEXT: x
+- CONFIDENCE: x%`;
     const req = await fetch("https://api.cohere.ai/v1/generate", {
         method: "POST",
         headers: {
@@ -46,7 +45,7 @@ For each illness that the patient may have, output 4 bullet points in the below 
             prompt: prompt,
             model: "command",
             max_tokens: 400,
-            temperature: 0.9
+            temperature: 0
         })
     });
     const res = (await req.json()).generations[0].text;
