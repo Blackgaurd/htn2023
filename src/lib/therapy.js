@@ -1,34 +1,23 @@
 import {generateCohere} from "./cohere.js";
 
-const chatHistory = [];
 /**
- * chat history limited to 10 msgs, each msg limited to 700 chars
- * @param input (180 chars max
+ *
+ * @param input
  * @returns {Promise<*>} the response
- * @throws Error if input > 700 chars
  */
 export default async function getTherapy(input, TESTING) {
-    if (input.length>700) {
-        throw new Error("Input too long: " + input.length());
-    }
     if (TESTING) {
         return Promise.resolve("This is a test response.")
     }
-    chatHistory.push({
-        patient: input
-    });
-    if (chatHistory.length > 10) {
-        chatHistory.shift();
-    }
-    const prompt = getPrompt(chatHistory);
+
+    const prompt = getPrompt(input);
     const res = await generateCohere(prompt);
-    chatHistory[chatHistory.length - 1].therapist = res;
     return res;
 }
 
-function getPrompt(chatHistory) {
+function getPrompt(input) {
     return `### Instruction ###
-Chat with the patient as their therapist to improve their mental health. Recall details from the chat history (which will be provided in the input) when replying.
+Chat with the patient as their therapist to improve their mental health.
 
 ### Context ###
 
@@ -36,26 +25,13 @@ You are a therapist called Nancy talking with one of your patients. They are tel
 
 ### Input Format ###
 
-The input will be a JSON array containing JSON elements. The JSON array will have the following information inside them:
-[
-    {
-        "patient": "what the patient said",
-        "therapist": "what you said in reply"
-    },
-    {
-        "patient": "what the patient said"
-    }
-]
-
-The JSON array will be sorted by chronological order; that is, the first element in the array will be the earliest message/reply pair in the conversation, and the last element will be the most recent message/reply pair.
-
-The last element will only have a "patient" field, and that is the current message that you must reply to.
+The input will be the patient's message to you.
 
 ### Input ###
 
-${JSON.stringify(chatHistory)}
+${input}
 
 ### Output Format ###
 
-Output your response, in sentence form, to the latest message from the patient. Ensure each sentence has its own unique meaning.`;
+Output your response, in sentence form, to the patient. Ensure each sentence has its own unique meaning.`;
 }
