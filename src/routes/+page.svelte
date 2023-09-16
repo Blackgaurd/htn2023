@@ -94,7 +94,7 @@
 	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
 >
 	<div
-		class="flex flex-col justify-center items-center h-screen translate-x-[13%]"
+		class="flex flex-col justify-center items-center h-screen"
 		class:shift-left={!hideOutput}
 	>
 		<!-- center this div vertically -->
