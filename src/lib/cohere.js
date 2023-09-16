@@ -16,7 +16,7 @@ ${input}
 
 ### Output Format ###
 
-For each illness that the patient may have, output 4 bullet points in the below format:
+For each illness that the patient may have, output 4 bullet points in the below format EXACTLY:
 
 - NAME: State the name of the diagnosed illness.
 - WHY: Explain why the patient could have that illness in 2 sentences.
@@ -24,11 +24,6 @@ For each illness that the patient may have, output 4 bullet points in the below 
 - CONFIDENCE: Calculate the certainty of the diagnosis as a percentage (100% means definitely certain).
 
 ### Example Output Format ###
-
-- NAME: x
-- WHY: x
-- NEXT: x
-- CONFIDENCE: x%
 
 - NAME: x
 - WHY: x
@@ -52,6 +47,8 @@ For each illness that the patient may have, output 4 bullet points in the below 
 
     const ans = [];
     const illnesses = res.split("\n\n");
+    illnesses.length--; //bandaid solution to output truncation
+
     for (const illness of illnesses) {
         const lines = illness.split("\n");
         ans.push({
@@ -61,6 +58,14 @@ For each illness that the patient may have, output 4 bullet points in the below 
             confidence: lines[3].split("CONFIDENCE: ")[1]
         });
     }
-    return ans;
+    const set = new Set();
+    for (const illness of ans) {
+        set.add(illness.name);
+    }
+    const realAns = [];
+    for (const s of set) {
+        realAns.push(ans.find((x) => x.name === s));
+    }
+    return realAns;
 
 }
