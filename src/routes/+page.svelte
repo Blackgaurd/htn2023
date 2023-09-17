@@ -3,7 +3,7 @@
 	import queryCohere from '../lib/cohere.js';
 	import getTherapy from "../lib/therapy.js";
 
-	let TESTING = true;
+	let TESTING = false;
 	let therapist = false;
 
 	let symptoms = [
