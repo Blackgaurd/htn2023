@@ -129,6 +129,17 @@
 						}
 					}}
 				/>
+				{#if symptomInput}
+					<button
+						in:fade={{ delay: 50, duration: 150 }}
+						out:fade={{ delay: 50, duration: 150 }}
+						on:click={() => {
+							symptomInput = '';
+						}}
+					>
+						&#10005;
+					</button>
+				{/if}
 			</div>
 			{#if !therapistMode}
 				<div class="mt-2">
@@ -136,7 +147,7 @@
 					<div class="flex flex-wrap">
 						{#each symptoms as symptom}
 							<button
-								class="px-2 py-1 m-1 bg-white rounded-md cursor-pointer"
+								class="px-2 py-1 m-1 transition-colors duration-150 bg-white rounded-md shadow-sm cursor-pointer hover:bg-slate-100"
 								on:click={() => addSymptom(symptom)}
 							>
 								{symptom}
@@ -189,8 +200,11 @@
 					</div>
 				{:then response}
 					{#if therapistMode}
-						<div class="w-[32rem] bg-white h-[20rem] rounded-md p-4 shadow-md items-center flex" in:fade>
-							<p class="text-lg"><i class="text-sm">Response from Dr. AI:</i><br>{response}</p>
+						<div
+							class="w-[32rem] bg-white h-[20rem] rounded-md p-4 shadow-md items-center flex"
+							in:fade
+						>
+							<p class="text-lg"><i class="text-sm">Response from Dr. AI:</i><br />{response}</p>
 						</div>
 					{:else}
 						<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade>
