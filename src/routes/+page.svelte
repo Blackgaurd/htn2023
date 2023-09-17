@@ -1,10 +1,10 @@
 <script>
 	import { fade } from 'svelte/transition';
 	import queryCohere from '../lib/cohere.js';
-	import getTherapy from "../lib/therapy.js";
+	import getTherapy from '../lib/therapy.js';
 
-	let TESTING = false;
-	let therapist = false;
+	let TESTING = true;
+	let therapistMode = false;
 
 	let symptoms = [
 		'Fever',
@@ -15,8 +15,6 @@
 		'Nausea',
 		'Shortness of breath'
 	];
-
-
 
 	let avatar, fileinput;
 
@@ -72,12 +70,19 @@
 		if (symptomInput === '') {
 			return;
 		}
-		if (!therapist) {
-			hideOutput = false;
+		hideOutput = false;
+		if (!therapistMode) {
 			queryPromise = queryCohere(symptomInput, TESTING);
 		} else {
-			getTherapy(symptomInput, TESTING).then(alert);
+			queryPromise = getTherapy(symptomInput, TESTING);
 		}
+	}
+
+	$: therapistMode, reset();
+	function reset() {
+		symptomInput = '';
+		hideOutput = true;
+		queryPromise = null;
 	}
 
 	let showDetails = new Array(10).fill(false);
@@ -92,6 +97,7 @@
 		}
 	}
 </script>
+
 <div
 	class="flex flex-row items-center justify-center"
 	style="background-image: url('bg.jpg'); background-size: cover; background-position: center;"
@@ -103,19 +109,19 @@
 			<img src="doctor-icon.png" alt="Logo" class="w-16 h-16" />
 		</div>
 		<label>
-			<input type="checkbox" bind:checked={therapist}/>
-			Therapist mode
+			<input type="checkbox" bind:checked={therapistMode} />
+			Therapist mode {therapistMode}
 		</label>
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="m-4 w-[32rem]">
-			<h1>{therapist?"How was your day?":"Find your illness and find the cure!"}</h1>
-			<div class="flex flex-row px-3 py-2 space-x-2 bg-white rounded-md">
+			<h1>{therapistMode ? 'How was your day?' : 'Find your illness and find the cure!'}</h1>
+			<div class="flex flex-row px-3 py-2 space-x-2 bg-white rounded-md shadow-md">
 				<button class="bg-inherit" on:click={search}>&#128269;</button>
 				<input
 					id="symptomInput"
 					class="w-full text-black bg-inherit focus:outline-none"
 					type="text"
-					placeholder={therapist?"I'm here for you :)":"Tell us about your symptoms"}
+					placeholder={therapistMode ? "I'm here for you :)" : 'Tell us about your symptoms'}
 					bind:value={symptomInput}
 					on:keypress={(e) => {
 						if (e.key === 'Enter') {
@@ -124,21 +130,21 @@
 					}}
 				/>
 			</div>
-			{#if !therapist}
-			<div class="mt-2">
-				<p>Common Illness Symptoms:</p>
-				<div class="flex flex-wrap">
-					{#each symptoms as symptom}
-						<button
-							class="px-2 py-1 m-1 bg-white rounded-md cursor-pointer"
-							on:click={() => addSymptom(symptom)}
-						>
-							{symptom}
-						</button>
-					{/each}
+			{#if !therapistMode}
+				<div class="mt-2">
+					<p>Common Illness Symptoms:</p>
+					<div class="flex flex-wrap">
+						{#each symptoms as symptom}
+							<button
+								class="px-2 py-1 m-1 bg-white rounded-md cursor-pointer"
+								on:click={() => addSymptom(symptom)}
+							>
+								{symptom}
+							</button>
+						{/each}
+					</div>
 				</div>
-			</div>
-				{/if}
+			{/if}
 			{#if avatar}
 				<div class="relative">
 					<img class="object-cover w-full mt-4 h-80" src={avatar} alt="Uploaded" />
@@ -151,22 +157,22 @@
 				</div>
 			{/if}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			{#if !therapist}
-			<div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
-				Don't know how to describe your symptom?
-				<button class="px-2 py-1 ml-2 text-white bg-red-400 rounded-md hover:bg-red-500">
-					Upload an image
-				</button>
-			</div>
+			{#if !therapistMode}
+				<div class="mt-4 text-black cursor-pointer" on:click={() => fileinput.click()}>
+					Don't know how to describe your symptom?
+					<button class="px-2 py-1 ml-2 text-white bg-red-400 rounded-md hover:bg-red-500">
+						Upload an image
+					</button>
+				</div>
 			{/if}
-			{#if !therapist}
-			<input
-				style="display:none"
-				type="file"
-				accept=".jpg, .jpeg, .png"
-				on:change={(e) => onFileSelected(e)}
-				bind:this={fileinput}
-			/>
+			{#if !therapistMode}
+				<input
+					style="display:none"
+					type="file"
+					accept=".jpg, .jpeg, .png"
+					on:change={(e) => onFileSelected(e)}
+					bind:this={fileinput}
+				/>
 			{/if}
 		</div>
 	</div>
@@ -181,38 +187,58 @@
 					<div class="text-xl font-semibold text-gray-700 loading-animation w-[32rem] px-4">
 						<div class="spinner" />
 					</div>
-				{:then illnesses}
-					<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade
-					>
-						<div>
-							<button class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
-							on:click={()=>fillShowDetails(!showDetails.every((v,i)=>i>=illnesses.length||v), illnesses.length)}>{showDetails.every((v,i)=>i>=illnesses.length||v)?"Collapse all":"Expand all"}</button>
+				{:then response}
+					{#if therapistMode}
+						<div class="w-[32rem] bg-white h-[20rem] rounded-md p-4 shadow-md items-center flex" in:fade>
+							<p class="text-lg"><i class="text-sm">Response from Dr. AI:</i><br>{response}</p>
 						</div>
-						{#each illnesses as illness, index}
-							<div class="p-4 my-4 bg-white border rounded-md shadow-sm">
-								<p class="text-lg font-semibold">{illness.name}</p>
+					{:else}
+						<div class="w-[32rem] overflow-y-scroll h-[32rem] overflow-x-hidden px-4" in:fade>
+							<div>
 								<button
 									class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
-									on:click={() => toggleDetails(index)}
+									on:click={() =>
+										fillShowDetails(
+											!showDetails.every((v, i) => i >= response.length || v),
+											response.length
+										)}
+									>{showDetails.every((v, i) => i >= response.length || v)
+										? 'Collapse all'
+										: 'Expand all'}</button
 								>
-									{showDetails[index] ? 'Hide details' : 'Show details'}
-								</button>
-								{#if showDetails[index]}
-									<div
-										class="p-4 mt-2 bg-gray-100 rounded-md shadow-inner"
-										style={showDetails[index] ? 'display-block' : 'display-none'}
-									>
-										<p class="text-sm"><span class="font-bold">Explanation:</span> {illness.why}</p>
-										<p class="text-sm"><span class="font-bold">Next steps:</span> {illness.next}</p>
-										<p class="text-sm">
-											<span class="font-bold">Confidence:</span>
-											{illness.confidence}
-										</p>
-									</div>
-								{/if}
 							</div>
-						{/each}
-					</div>
+							{#each response as illness, index}
+								<div class="p-4 my-4 bg-white border rounded-md shadow-sm">
+									<p class="text-lg font-semibold">{illness.name}</p>
+									<button
+										class="px-4 py-1 mt-2 text-white bg-blue-500 rounded-md"
+										on:click={() => toggleDetails(index)}
+									>
+										{showDetails[index] ? 'Hide details' : 'Show details'}
+									</button>
+									{#if showDetails[index]}
+										<div
+											class="p-4 mt-2 bg-gray-100 rounded-md shadow-inner"
+											style={showDetails[index] ? 'display-block' : 'display-none'}
+										>
+											<p class="text-sm">
+												<span class="font-bold">Explanation:</span>
+												{illness.why}
+											</p>
+											<p class="text-sm">
+												<span class="font-bold">Next steps:</span>
+												{illness.next}
+											</p>
+											<p class="text-sm">
+												<span class="font-bold">Confidence:</span>
+												{illness.confidence}
+											</p>
+										</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
 				{/await}
 			{/if}
 		</div>

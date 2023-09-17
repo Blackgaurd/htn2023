@@ -1,4 +1,4 @@
-import {generateCohere} from "./cohere.js";
+import { generateCohere } from './cohere.js';
 
 /**
  *
@@ -6,17 +6,19 @@ import {generateCohere} from "./cohere.js";
  * @returns {Promise<*>} the response
  */
 export default async function getTherapy(input, TESTING) {
-    if (TESTING) {
-        return Promise.resolve("This is a test response.")
-    }
+	if (TESTING) {
+        console.log('TESTING');
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		return 'this is a test response';
+	}
 
-    const prompt = getPrompt(input);
-    const res = await generateCohere(prompt);
-    return res;
+	const prompt = getPrompt(input);
+	const res = await generateCohere(prompt);
+	return res;
 }
 
 function getPrompt(input) {
-    return `### Instruction ###
+	return `### Instruction ###
 Chat with the patient as their therapist to improve their mental health.
 
 ### Context ###
