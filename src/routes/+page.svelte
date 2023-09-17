@@ -94,13 +94,13 @@
 </script>
 <div
 	class="flex flex-row items-center justify-center"
-	style="background-image: url('/src/assets/bg.jpg'); background-size: cover; background-position: center;"
+	style="background-image: url('bg.jpg'); background-size: cover; background-position: center;"
 >
 	<div class="flex flex-col items-center justify-center h-screen" class:shift-left={!hideOutput}>
 		<!-- center this div vertically -->
 		<div class="flex">
 			<h1 class="text-6xl text-white">Dr. AI</h1>
-			<img src="/src/assets/doctor-icon.png" alt="Logo" class="w-16 h-16" />
+			<img src="doctor-icon.png" alt="Logo" class="w-16 h-16" />
 		</div>
 		<label>
 			<input type="checkbox" bind:checked={therapist}/>
